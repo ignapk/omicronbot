@@ -153,6 +153,60 @@ module.exports = (client) => {
     }
   });
 
+	// getRandom() returns a single random element form an object
+	client.getRandom = (msgs) => {
+	if(msgs==null) return("There is no specified message, see "+config.    prefix+"help for more information");
+	let names = Object.keys(msgs);
+	let index = Math.floor(Math.random()*names.length);
+	let msg=msgs[names[index]];
+	return(msg);
+	};
+
+	// replace $user and $channel with links to users and channels
+	// if its a goodbye msg then use user tag instead
+	client.tag = (msg, member, bool) => {
+        if(bool)
+                msg=msg.replace("$user",member.user.tag);
+        else
+                msg=msg.replace("$user",member.user.toString());
+        member.guild.channels.forEach( (ch) => { msg=msg.replace("$"+ch.name,ch.toString()); });
+        return(msg);
+	};
+
+	//troll
+	client.troll = (client, guild) => {
+        	let time = Math.floor(Math.random()*(86400-10800+1)+10800)*1000;
+	        let general = guild.channels.find(val => val.name === 'general');
+	        if(!general) general = guild.channels.array()[1];
+        	general.send(client.getRandom(client.messages.getProp(guild.name,'troll')));
+	        setTimeout(client.troll,time,client,guild);
+	};
+
+	client.doGuildIteration = () => {
+		const guild = client.guildsIterator.next().value;
+		//var nizio = client.guildsData.get(guild.name);
+		//console.log("at doGuildIteration: ");
+		//for (var i in nizio) console.log(i+": "+nizio[i]);
+		if(guild) 
+			//GuildData.findOne({ guildID: guild.id }).then(guildData => guildData && guildData.checkUsers(client));
+                      client.guildsData.get(guild.name) && client.guildsData.get(guild.name).checkUsers(client);
+	}
+
+	client.registerActivity = (guild, member, guildData) => {
+	  if (member && guildData && member.id !== client.user.id) {
+            guildData.users[member.id] = new Date(); //store now as the latest date this user has interacted
+            if (client.canManageRoles(guildData)) {
+              if (guildData.shouldMarkActive(member))
+                guildData.doMarkActive(member);
+            }   
+            client.guildsData.set(guild.name, guildData);
+          }   
+        }
+
+	client.canManageRoles = (guildData) => {
+          return guildData.allowRoleAddition && guildData.activeRoleID && guildData.activeRoleID.length > 0;
+        }
+
   // `await client.wait(1000);` to "pause" for 1 second.
   client.wait = require("util").promisify(setTimeout);
 

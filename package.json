@@ -1,7 +1,7 @@
 {
-  "name": "guidebot",
-  "version": "2.3.5",
-  "description": "A boilerplate example bot with command handler and reloadable commands. Updated and Maintained by the Idiot's Guide Community",
+  "name": "omicronbot",
+  "version": "1.0.0",
+  "description": "Fork of omicronbot from An Idiot's Guide",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -12,23 +12,25 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/An-Idiots-Guide/guidebot.git"
+    "url": "git+https://github.com/ignapk/omicronbot.git"
   },
-  "author": "Evelyne Lachance <eslachance@gmail.com> (http://evie.codes)",
+  "author": "Ignacy Kuchcinski <ignacykuchcinski@gmail.com>",
   "contributors": [
     "York (http://anidiots.guide)"
   ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/An-Idiots-Guide/guidebot/issues"
+    "url": "https://github.com/ignapk/omicronbot/issues"
   },
-  "homepage": "https://github.com/An-Idiots-Guide/guidebot#readme",
+  "homepage": "https://github.com/ignapk/omicronbot#readme",
   "dependencies": {
     "better-sqlite-pool": "^0.1.2",
     "chalk": "^2.3.0",
+    "date-diff": "^0.2.1",
     "discord.js": "^11.4.2",
     "enmap": "^4.2.1",
     "moment": "^2.20.1",
-    "moment-duration-format": "^2.2.0"
+    "moment-duration-format": "^2.2.0",
+    "xmlhttprequest": "^1.8.0"
   }
 }

@@ -17,9 +17,25 @@ module.exports = async (client, message) => {
     return message.reply(`My prefix on this guild is \`${settings.prefix}\``);
   }
 
+  if (message.guild && message.member)
+//old        GuildData.findOne({ guildID: message.guild.id }).then(guildData => registerActivity(message.guild, message.member, guildData));
+        client.registerActivity(message.guild, message.member, client.guildsData.get(message.guild.name));
+
   // Also good practice to ignore any message that does not start with our prefix,
   // which is set in the configuration file.
-  if (message.content.indexOf(settings.prefix) !== 0) return;
+  if (message.content.indexOf(settings.prefix) !== 0) {
+    for (var trigger in client.responds.get(message.guild.name)) {
+      if (message.content.includes(trigger)) 
+        return message.channel.send(client.responds.get(message.guild.name, trigger));
+    }
+    return;
+  }
+
+  // Checks if the prefix was used with a number, specific rule for $ sign
+  if (message.content.match(/^\$[0-9]+/)) return;
+
+  // SPY
+  if (message.guild.name==client.guildname && message.channel.name==client.channelname && client.spy) console.log(message.member.user.tag+": "+message.content);
 
   // Here we separate our "command" name, and our "arguments" for the command.
   // e.g. if we have the message "+say Is this the real life?" , we'll get the following:
@@ -39,8 +55,11 @@ module.exports = async (client, message) => {
   const cmd = client.commands.get(command) || client.commands.get(client.aliases.get(command));
   // using this const varName = thing OR otherthign; is a pretty efficient
   // and clean way to grab one of 2 values!
-  if (!cmd) return;
-
+  if (!cmd) {
+    client.logger.cmd(`[CMD] ${client.config.permLevels.find(l => l.level === level).name} ${message.author.username} (${message.author.id}) tried to run command ${command}`);
+    return message.channel.send(client.tag(client.getRandom(client.messages.getProp(message.member.guild.name,'unknown')), message.member, false));
+//message.channel.send("Unknown command, please try again. See "+client.config.prefix+"help for more information.");
+  }
   // Some commands may not be useable in DMs. This check prevents those commands from running
   // and return a friendly error message.
   if (cmd && !message.guild && cmd.conf.guildOnly)
@@ -65,6 +84,6 @@ module.exports = async (client, message) => {
     message.flags.push(args.shift().slice(1));
   }
   // If the command exists, **AND** the user has permission, run it.
-  client.logger.cmd(`[CMD] ${client.config.permLevels.find(l => l.level === level).name} ${message.author.username} (${message.author.id}) ran command ${cmd.help.name}`);
+  client.logger.cmd(`[CMD] ${client.config.permLevels.find(l => l.level === level).name} ${message.author.username} (${message.author.id}) ran command ${cmd.help.name} at ${message.guild.name}`);
   cmd.run(client, message, args, level);
 };
